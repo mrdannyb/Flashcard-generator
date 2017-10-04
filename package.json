@@ -1,0 +1,22 @@
+{
+  "name": "flashcards",
+  "version": "1.0.0",
+  "description": "Homework",
+  "main": "cards.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mrdannyb/Flashcard-generator.git"
+  },
+  "author": "Mr. Dannyb",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mrdannyb/Flashcard-generator/issues"
+  },
+  "homepage": "https://github.com/mrdannyb/Flashcard-generator#readme",
+  "dependencies": {
+    "inquirer": "^3.3.0"
+  }
+}
