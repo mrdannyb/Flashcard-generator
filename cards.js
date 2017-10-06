@@ -1,8 +1,11 @@
+var basic = require("./basicCard.js");
+var cloze = require("./cloze.js");
 var inquirer = require("inquirer");
 var fs = require("fs");
 
 var stack = "example";
 var practiceStack = [];
+
 
 
 function firstPrompt() {
@@ -123,9 +126,62 @@ function addToStack(title) {
     })
 }
 
+function randomQ() {
+  console.log("stack: " + stack);
+  var rand = Math.floor(Math.random() * practiceStack.length);
+  inquirer.
+    prompt([
+      {
+        name: "quest",
+        type: "input",
+        message: practiceStack[rand].quest
+      }
+    ]).then(function(ans) {
+      if (true) {
+        if (ans.quest === practiceStack[rand].answer) {
+          console.log("Correct, ");
+        } else {
+          console.log("Not the correct answer.");
+          inquirer.
+            prompt([
+              {
+                name: "retry",
+                type: "list",
+                message: "Care to try again, or something else?",
+                choices: ["Guess again", "See answer", "Next Question", "Top menu"]
+              }
+            ]).then(function(answer) {
+              switch (answer.retry) {
+                case "Guess again":
+
+                  break;
+                case "See answer":
+
+                  break;
+                case "Next Question":
+                  readyNextQ
+                  break;
+                case "Top menu":
+                  firstPrompt();
+                  break;
+                default:
+
+              }
+            })
+        }
+      } else {
+        console
+      }
+    })
+}
+
 var card = function(arg1, arg2) {
   this.quest = arg1;
   this.answer = arg2;
+}
+
+function readyNextQ() {
+
 }
 
 function pracStack(title) {
@@ -136,10 +192,10 @@ function pracStack(title) {
     for (i = 0; i < (dataArr.length - 1); i++) {
       var popIn = dataArr[i].split("&$");
       var qna = new card(popIn[0],popIn[1]);
-      console.log(qna);
       practiceStack.push(qna);
-      console.log(i + " :pracstack = " + practiceStack)
     }
+    console.log("pracStack");
+    randomQ();
   })
 }
 
