@@ -5,10 +5,24 @@ var fs = require("fs");
 
 var stack = "example";
 var practiceStack = [];
+var stackList = [];
 
-
+if (fs.existsSync("./stacks")) {
+  firstPrompt();
+} else {
+  fs.appendFile("stacks.txt","\n", function(err) {
+    if (err) throw err;
+    firstPrompt();
+  })
+}
 
 function firstPrompt() {
+  fs.readFile("stacks.txt", "utf8", function(err,data) {
+    if (err) throw err;
+    var dataArr = data.split("\n");
+    console.log(dataArr);
+  });
+
   inquirer.
     prompt([
     {
@@ -41,7 +55,7 @@ function create() {
         newStack();
       } else {
         stack = answer.newOrAdd;
-        newCard(answer.newOrAdd);
+        newCardConfirm(answer.newOrAdd);
       }
     })
 }
@@ -74,40 +88,56 @@ function newStack(title) {
       }
     ]).then(function(answer) {
       stack = answer.stackCalled;
-      fs.appendFile(stack + ".txt", stack, function(err){
+      fs.appendFile(stack + ".txt", stack + "\n", function(err){
         if (err) throw err;
         console.log("Made the stack called: " + stack);
-        newCard(answer.stackCalled);
+        newCardConfirm(answer.stackCalled);
+      })
+      fs.appendFile("stacks.txt", stack + "\n", function(err) {
+        if (err) throw err;
       })
     })
 }
 
-function newCard(title) {
+function newCardConfirm(title) {
   inquirer.
     prompt([
       {
         name: "ready",
         type: "confirm",
         message: "Shall we add a new card to stack " + title
+      },
+      {
+        name: "basicCloze",
+        type: "list",
+        message: "Basic card or insertion card?",
+        choices: ["Basic", "Cloze"]
       }
     ]).then(function(answer) {
       if (answer.ready) {
-        addToStack(title);
+        switch (answer.basicCloze) {
+          case "Basic":
+            addBasicToStack(title);
+            break;
+          case "Cloze":
+            addClozeToStack(title);
+            break;
+        }
       } else {
         firstPrompt();
       }
     })
-  console.log("at newCard(), stack is " + stack)
-  console.log("the param in newCard() is: " + title);
+  console.log("at newCardConfirm(), stack is " + stack)
+  console.log("the param in newCardConfirm() is: " + title);
 }
 
-function addToStack(title) {
-  console.log("gonna add to stack " + title + " if it exists");
+function addBasicToStack(title) {
+  console.log("gonna add a basic card to stack " + title + " if it exists");
   inquirer.
     prompt([
       {
         name: "question",
-        message: "Type your question. If you want the answer to represent a missing word, put a # where the word would be.",
+        message: "Type your question.",
         type: "input"
       },
       {
@@ -116,14 +146,18 @@ function addToStack(title) {
         type: "input"
       }
     ]).then(function(ans) {
-      var nCard = new card(ans.question, ans.response);
+      var nCard = new basicCard(ans.question, ans.response);
       fs.appendFile(title + ".txt", nCard.quest + "&$" + nCard.answer + "!@#", function(err) {
         if (err) throw err;
         console.log("card added to the stack " + stack);
         console.log("arg for then in add to stack: " + title);
-        newCard(title);
+        newCardConfirm(title);
       })
     })
+}
+
+function addClozeToStack(title) {
+  console.log("gonna add cloze to stack");
 }
 
 function randomQ() {
@@ -175,13 +209,8 @@ function randomQ() {
     })
 }
 
-var card = function(arg1, arg2) {
-  this.quest = arg1;
-  this.answer = arg2;
-}
-
 function readyNextQ() {
-
+  console.log("a confirm will be here");
 }
 
 function pracStack(title) {
@@ -198,5 +227,3 @@ function pracStack(title) {
     randomQ();
   })
 }
-
-firstPrompt();
